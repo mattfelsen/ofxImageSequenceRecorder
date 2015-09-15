@@ -9,7 +9,7 @@ http://forum.openframeworks.cc/index.php?topic=1687.0
 
 typedef struct { 
     string fileName;    
-    ofPixels image;
+    ofShortPixels image;
 } QueuedImage;
 
 class ofxImageSequenceRecorder : public ofThread {    
@@ -37,7 +37,10 @@ public:
         while(isThreadRunning()) {
             if(!q.empty()){
                 QueuedImage i = q.front();
-                ofSaveImage(i.image, i.fileName);
+                ofBuffer buffer = ofBuffer((char*) i.image.getData(), i.image.size() * sizeof(unsigned short));
+                ofFile file = ofFile(i.fileName, ofFile::WriteOnly, true);
+                file.writeFromBuffer(buffer);
+
                 q.pop();
             }
         }
@@ -58,7 +61,7 @@ public:
         addFrame(player.getPixelsRef());
     }
         
-    void addFrame(ofPixels imageToSave) {  
+    void addFrame(ofShortPixels imageToSave) {  
 
         
         
