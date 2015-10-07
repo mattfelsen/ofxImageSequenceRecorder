@@ -41,9 +41,13 @@ public:
         while(isThreadRunning()) {
             if(!q.empty()){
                 QueuedImage<PixelType> i = q.front();
-                ofBuffer buffer = ofBuffer((char*) i.pix.getData(), i.pix.size() * i.pix.getBytesPerPixel());
-                ofFile file = ofFile(i.fileName, ofFile::WriteOnly, true);
-                file.writeFromBuffer(buffer);
+
+				if (format == "raw") {
+					ofBuffer buffer = ofBuffer((char*) i.pix.getData(), i.pix.size() * i.pix.getBytesPerPixel());
+					ofBufferToFile(i.fileName, buffer, true);
+				} else {
+					ofSaveImage(i.pix, i.fileName);
+				}                
 
                 q.pop();
             }
