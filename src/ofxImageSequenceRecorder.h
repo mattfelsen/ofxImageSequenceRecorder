@@ -7,23 +7,27 @@ http://forum.openframeworks.cc/index.php?topic=1687.0
 
 #include "ofMain.h"    
 
-typedef struct { 
-    string fileName;    
-    ofShortPixels image;
-} QueuedImage;
+template<typename PixelType>
+struct QueuedImage {
+	string fileName;
+	PixelType pix;
+};
 
-class ofxImageSequenceRecorder : public ofThread {    
+template<typename PixelType>
+class ofxImageSequenceRecorder_ : public ofThread {
 public:    
-  
-    int counter;  
-    queue<QueuedImage> q;
-    string prefix;
-    string format;
       
-    ofxImageSequenceRecorder(){  
-        counter=0;  
-        
-    }  
+    ofxImageSequenceRecorder_(){  
+		resetCounter();
+    }
+
+	int getFrameCount() {
+		return counter;
+	}
+
+	void resetCounter() {
+		counter = 0;
+	}
     
     void setPrefix(string pre){
         prefix = pre;
@@ -36,45 +40,47 @@ public:
     void threadedFunction() {    
         while(isThreadRunning()) {
             if(!q.empty()){
-                QueuedImage i = q.front();
-                ofBuffer buffer = ofBuffer((char*) i.image.getData(), i.image.size() * sizeof(unsigned short));
+                QueuedImage<PixelType> i = q.front();
+                ofBuffer buffer = ofBuffer((char*) i.pix.getData(), i.pix.size() * i.pix.getBytesPerPixel());
                 ofFile file = ofFile(i.fileName, ofFile::WriteOnly, true);
                 file.writeFromBuffer(buffer);
 
                 q.pop();
             }
         }
-        
-
-        
     }   
-    
-    void addFrame(ofImage &img){
-        addFrame(img.getPixelsRef());
-    }
-    
-    void addFrame(ofVideoGrabber &cam){
-        addFrame(cam.getPixelsRef());
-    }
-    
-    void addFrame(ofVideoPlayer &player){
-        addFrame(player.getPixelsRef());
-    }
-        
-    void addFrame(ofShortPixels imageToSave) {  
 
-        
-        
-        char fileName[100]; 
-        sprintf(fileName,  "%s%.4i.%s" , prefix.c_str(), counter, format.c_str());     
-        counter++;   
+	template<typename PixelType>
+	void addFrame(ofBaseHasPixels_<PixelType>& img) {
+		addFrame(img.getPixels());
+	}
+
+	template<typename PixelType>
+    void addFrame(ofPixels_<PixelType>& pix) {  
+        char fileName[255]; 
+        sprintf(fileName, "%s%.4i.%s" , prefix.c_str(), counter, format.c_str());     
+        counter++;
         
         QueuedImage qImage;
         
         qImage.fileName = fileName;    
-        qImage.image = imageToSave; 
+        qImage.pix = pix;
         
         q.push(qImage);
-        
-    }    
-};  
+    }
+
+protected:
+	int counter;
+	string prefix;
+	string format;
+	queue<QueuedImage<PixelType>> q;
+
+};
+
+typedef ofxImageSequenceRecorder_<ofPixels> ofxImageSequenceRecorder;
+typedef ofxImageSequenceRecorder_<ofShortPixels> ofxShortImageSequenceRecorder;
+typedef ofxImageSequenceRecorder_<ofFloatPixels> ofxFloatImageSequenceRecorder;
+
+template class ofxImageSequenceRecorder_<ofPixels>;
+template class ofxImageSequenceRecorder_<ofShortPixels>;
+template class ofxImageSequenceRecorder_<ofFloatPixels>;
