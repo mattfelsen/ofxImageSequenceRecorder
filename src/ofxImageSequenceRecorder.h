@@ -10,7 +10,7 @@ http://forum.openframeworks.cc/index.php?topic=1687.0
 template<typename PixelType>
 struct QueuedImage {
 	string fileName;
-	PixelType pix;
+	ofPixels_<PixelType> pix;
 };
 
 template<typename PixelType>
@@ -65,7 +65,7 @@ public:
         sprintf(fileName, "%s%.4i.%s" , prefix.c_str(), counter, format.c_str());     
         counter++;
         
-        QueuedImage qImage;
+        QueuedImage<PixelType> qImage;
         
         qImage.fileName = fileName;    
         qImage.pix = pix;
@@ -81,10 +81,10 @@ protected:
 
 };
 
-typedef ofxImageSequenceRecorder_<ofPixels> ofxImageSequenceRecorder;
-typedef ofxImageSequenceRecorder_<ofShortPixels> ofxShortImageSequenceRecorder;
-typedef ofxImageSequenceRecorder_<ofFloatPixels> ofxFloatImageSequenceRecorder;
+typedef ofxImageSequenceRecorder_<unsigned char> ofxImageSequenceRecorder;
+typedef ofxImageSequenceRecorder_<unsigned short> ofxShortImageSequenceRecorder;
+typedef ofxImageSequenceRecorder_<float> ofxFloatImageSequenceRecorder;
 
-template class ofxImageSequenceRecorder_<ofPixels>;
-template class ofxImageSequenceRecorder_<ofShortPixels>;
-template class ofxImageSequenceRecorder_<ofFloatPixels>;
+template class ofxImageSequenceRecorder_<unsigned char>;
+template class ofxImageSequenceRecorder_<unsigned short>;
+template class ofxImageSequenceRecorder_<float>;
