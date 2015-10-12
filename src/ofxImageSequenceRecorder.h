@@ -25,6 +25,10 @@ public:
 		return counter;
 	}
 
+	int getQueueLength() {
+		return q.size();
+	}
+
 	void resetCounter() {
 		counter = 0;
 	}
