@@ -58,12 +58,10 @@ public:
         }
     }   
 
-	template<typename PixelType>
 	void addFrame(ofBaseHasPixels_<PixelType>& img) {
 		addFrame(img.getPixels());
 	}
 
-	template<typename PixelType>
     void addFrame(ofPixels_<PixelType>& pix) {
         char fileName[255]; 
         sprintf(fileName, "%s%.4i.%s" , prefix.c_str(), counter, format.c_str());     
