@@ -34,7 +34,7 @@ public:
 	}
     
     void setPrefix(string pre){
-        prefix = pre;
+        prefix = ofFilePath::addTrailingSlash(pre);
     }
     
     void setFormat(string fmt){
@@ -64,14 +64,21 @@ public:
 	}
 
 	template<typename PixelType>
-    void addFrame(ofPixels_<PixelType>& pix) {  
+    void addFrame(ofPixels_<PixelType>& pix) {
         char fileName[255]; 
         sprintf(fileName, "%s%.4i.%s" , prefix.c_str(), counter, format.c_str());     
         counter++;
-        
+
+        addFrame(pix, string(fileName));
+    }
+
+    // Note: if you aremanually specifying filenames, make sure they are
+    // properly formatted (i.e. sequential, zero-padded, etc.) so they load
+    // correctly & in order!
+    void addFrame(ofPixels_<PixelType>& pix, string fileName) {
         QueuedImage<PixelType> qImage;
-        
-        qImage.fileName = fileName;    
+
+        qImage.fileName = prefix + fileName;
         qImage.pix = pix;
         
         q.push(qImage);
