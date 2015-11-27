@@ -64,7 +64,7 @@ public:
 
     void addFrame(ofPixels_<PixelType>& pix) {
         char fileName[255]; 
-        sprintf(fileName, "%s%.4i.%s" , prefix.c_str(), counter, format.c_str());     
+        sprintf(fileName, "%.4i.%s", counter, format.c_str());
         counter++;
 
         addFrame(pix, string(fileName));
